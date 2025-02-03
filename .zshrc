@@ -1,21 +1,27 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
+export LISTME_DB=postgresql://lists_admin@localhost:5432/list_me_db
+
+#Alias nvim
+alias vim="nvim"
+alias vi="nvim"
+alias oldvim="vim"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"
+export PATH="$PATH:$GOBIN"
+
+# export GOPATH=$HOME/xxxxx
+# export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+# export PATH=$PATH:$(go env GOPATH)/bin 
 
 # dotfiles
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-
-# ANDORID STUDIO
-export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_SDK_ROOT/emulator
-export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
-
-# Path to VS CODE
-export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -83,7 +89,7 @@ ZSH_THEME="spaceship"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions)
+plugins=(git zsh-autosuggestions fzf-tab)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -112,10 +118,14 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
 function tat {
   name=$(basename `pwd` | sed -e 's/\.//g')
 
-  if tmux ls 2>&1 | grep "$name"; then
+  if [ -n "$TMUX" ]; then
+    tmux new -s "$name" -d
+    tmux switch-client -t "$name"
+  elif tmux ls 2>&1 | grep "$name"; then
     tmux attach -t "$name"
   elif [ -f .envrc ]; then
     direnv exec / tmux new-session -s "$name"
@@ -124,4 +134,7 @@ function tat {
   fi
 }
 
+
+# FZF options and keybindings
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
